@@ -95,7 +95,7 @@ var Class;
   window.CustomEvent = CustomEvent;
 })();
 
-// requestAnimationFrame polyfill by Erik MÃ¶ller. fixes from Paul Irish and Tino Zijdel
+// requestAnimationFrame polyfill by Erik Möller. fixes from Paul Irish and Tino Zijdel
 // MIT license
 (function() {
     var lastTime = 0;
@@ -131,12 +131,6 @@ var Class;
 	  };
 	}
 }());
-/**
- * Taken from jQuery 2.1.3
- *
- * @param obj
- * @returns {boolean}
- */
 var $isplainobject = function( obj ) {
   // Not plain objects:
   // - Any object or value whose internal [[Class]] property is not "[object Object]"
@@ -2376,7 +2370,7 @@ JSONEditor.defaults.editors.object = JSONEditor.AbstractEditor.extend({
     });
     
     var container;
-    
+
     if(this.format === 'grid') {
       var rows = [];
       $each(this.property_order, function(j,key) {
@@ -2418,7 +2412,7 @@ JSONEditor.defaults.editors.object = JSONEditor.AbstractEditor.extend({
         rows[found].minh = Math.min(rows[found].minh,height);
         rows[found].maxh = Math.max(rows[found].maxh,height);
       });
-      
+
       // Make almost full rows width 12
       // Do this by increasing all editors' sizes proprotionately
       // Any left over space goes to the biggest editor
@@ -2454,6 +2448,7 @@ JSONEditor.defaults.editors.object = JSONEditor.AbstractEditor.extend({
           
           if(editor.options.hidden) editor.container.style.display = 'none';
           else this.theme.setGridColumnSize(editor.container,rows[i].editors[j].width);
+          editor.container.classList.add("container-" + key);
           row.appendChild(editor.container);
         }
       }
@@ -2469,6 +2464,7 @@ JSONEditor.defaults.editors.object = JSONEditor.AbstractEditor.extend({
         
         if(editor.options.hidden) editor.container.style.display = 'none';
         else self.theme.setGridColumnSize(editor.container,12);
+        editor.container.classList.add("container-" + key);
         row.appendChild(editor.container);
       });
     }
@@ -6441,7 +6437,6 @@ JSONEditor.defaults.themes.bootstrap2 = JSONEditor.AbstractTheme.extend({
   getIndentedPanel: function() {
     var el = document.createElement('div');
     el.className = 'well well-small';
-    el.style.paddingBottom = 0;
     return el;
   },
   getFormInputDescription: function(text) {
@@ -6636,13 +6631,12 @@ JSONEditor.defaults.themes.bootstrap3 = JSONEditor.AbstractTheme.extend({
   getIndentedPanel: function() {
     var el = document.createElement('div');
     el.className = 'well well-sm';
-    el.style.paddingBottom = 0;
     return el;
   },
   getFormInputDescription: function(text) {
     var el = document.createElement('p');
     el.className = 'help-block';
-    el.innerHTML = text;
+    el.textContent = text;
     return el;
   },
   getHeaderButtonHolder: function() {
@@ -6789,7 +6783,6 @@ JSONEditor.defaults.themes.foundation = JSONEditor.AbstractTheme.extend({
   getIndentedPanel: function() {
     var el = document.createElement('div');
     el.className = 'panel';
-    el.style.paddingBottom = 0;
     return el;
   },
   getHeaderButtonHolder: function() {
@@ -6937,7 +6930,7 @@ JSONEditor.defaults.themes.foundation5 = JSONEditor.defaults.themes.foundation.e
   },
   getTabHolder: function() {
     var el = document.createElement('div');
-    el.innerHTML = "<dl class='tabs vertical'></dl><div class='tabs-content vertical'></div>";
+    el.innerHTML = "<dl class='tabs vertical'></dl><div class='tabs-content'></div>";
     return el;
   },
   getTab: function(text) {
@@ -7240,7 +7233,7 @@ JSONEditor.defaults.iconlibs.bootstrap2 = JSONEditor.AbstractIconLib.extend({
   mapping: {
     collapse: 'chevron-down',
     expand: 'chevron-up',
-    "delete": 'trash',
+    delete: 'trash',
     edit: 'pencil',
     add: 'plus',
     cancel: 'ban-circle',
@@ -7255,7 +7248,7 @@ JSONEditor.defaults.iconlibs.bootstrap3 = JSONEditor.AbstractIconLib.extend({
   mapping: {
     collapse: 'chevron-down',
     expand: 'chevron-right',
-    "delete": 'remove',
+    delete: 'remove',
     edit: 'pencil',
     add: 'plus',
     cancel: 'floppy-remove',
@@ -7270,7 +7263,7 @@ JSONEditor.defaults.iconlibs.fontawesome3 = JSONEditor.AbstractIconLib.extend({
   mapping: {
     collapse: 'chevron-down',
     expand: 'chevron-right',
-    "delete": 'remove',
+    delete: 'remove',
     edit: 'pencil',
     add: 'plus',
     cancel: 'ban-circle',
@@ -7285,7 +7278,7 @@ JSONEditor.defaults.iconlibs.fontawesome4 = JSONEditor.AbstractIconLib.extend({
   mapping: {
     collapse: 'caret-square-o-down',
     expand: 'caret-square-o-right',
-    "delete": 'times',
+    delete: 'times',
     edit: 'pencil',
     add: 'plus',
     cancel: 'ban',
@@ -7300,7 +7293,7 @@ JSONEditor.defaults.iconlibs.foundation2 = JSONEditor.AbstractIconLib.extend({
   mapping: {
     collapse: 'minus',
     expand: 'plus',
-    "delete": 'remove',
+    delete: 'remove',
     edit: 'edit',
     add: 'add-doc',
     cancel: 'error',
@@ -7315,7 +7308,7 @@ JSONEditor.defaults.iconlibs.foundation3 = JSONEditor.AbstractIconLib.extend({
   mapping: {
     collapse: 'minus',
     expand: 'plus',
-    "delete": 'x',
+    delete: 'x',
     edit: 'pencil',
     add: 'page-add',
     cancel: 'x-circle',
@@ -7330,7 +7323,7 @@ JSONEditor.defaults.iconlibs.jqueryui = JSONEditor.AbstractIconLib.extend({
   mapping: {
     collapse: 'triangle-1-s',
     expand: 'triangle-1-e',
-    "delete": 'trash',
+    delete: 'trash',
     edit: 'pencil',
     add: 'plusthick',
     cancel: 'closethick',
@@ -7341,7 +7334,24 @@ JSONEditor.defaults.iconlibs.jqueryui = JSONEditor.AbstractIconLib.extend({
   icon_prefix: 'ui-icon ui-icon-'
 });
 
-JSONEditor.defaults.templates["default"] = function() {
+JSONEditor.defaults.templates.default = function() {
+  var expandVars = function(vars) {
+    var expanded = {};
+    $each(vars, function(i,el) {
+      if(typeof el === "object" && el !== null) {
+        var tmp = {};
+        $each(el, function(j,item) {
+          tmp[i+'.'+j] = item;
+        });
+        $extend(expanded,expandVars(tmp));
+      }
+      else {
+        expanded[i] = el;
+      }
+    });
+    return expanded;
+  };
+  
   return {
     compile: function(template) {
       var matches = template.match(/{{\s*([a-zA-Z0-9\-_ \.]+)\s*}}/g);
@@ -7394,79 +7404,6 @@ JSONEditor.defaults.templates["default"] = function() {
           ret = ret.replace(r.s, r.r(vars));
         }
         return ret;
-      };
-    }
-  };
-};
-
-JSONEditor.defaults.templates.ejs = function() {
-  if(!window.EJS) return false;
-
-  return {
-    compile: function(template) {
-      var compiled = new window.EJS({
-        text: template
-      });
-
-      return function(context) {
-        return compiled.render(context);
-      };
-    }
-  };
-};
-
-JSONEditor.defaults.templates.handlebars = function() {
-  return window.Handlebars;
-};
-
-JSONEditor.defaults.templates.hogan = function() {
-  if(!window.Hogan) return false;
-
-  return {
-    compile: function(template) {
-      var compiled = window.Hogan.compile(template);
-      return function(context) {
-        return compiled.render(context);
-      };
-    }
-  };
-};
-
-JSONEditor.defaults.templates.markup = function() {
-  if(!window.Mark || !window.Mark.up) return false;
-
-  return {
-    compile: function(template) {
-      return function(context) {
-        return window.Mark.up(template,context);
-      };
-    }
-  };
-};
-
-JSONEditor.defaults.templates.mustache = function() {
-  if(!window.Mustache) return false;
-
-  return {
-    compile: function(template) {
-      return function(view) {
-        return window.Mustache.render(template, view);
-      };
-    }
-  };
-};
-
-JSONEditor.defaults.templates.swig = function() {
-  return window.swig;
-};
-
-JSONEditor.defaults.templates.underscore = function() {
-  if(!window._) return false;
-
-  return {
-    compile: function(template) {
-      return function(context) {
-        return window._.template(template, context);
       };
     }
   };
@@ -7782,71 +7719,6 @@ JSONEditor.defaults.resolvers.unshift(function(schema) {
   // If this schema uses `oneOf`
   if(schema.oneOf) return "multiple";
 });
-
-/**
- * This is a small wrapper for using JSON Editor like a typical jQuery plugin.
- */
-(function() {
-  if(window.jQuery || window.Zepto) {
-    var $ = window.jQuery || window.Zepto;
-    $.jsoneditor = JSONEditor.defaults;
-    
-    $.fn.jsoneditor = function(options) {
-      var self = this;
-      var editor = this.data('jsoneditor');
-      if(options === 'value') {
-        if(!editor) throw "Must initialize jsoneditor before getting/setting the value";
-        
-        // Set value
-        if(arguments.length > 1) {
-          editor.setValue(arguments[1]);
-        }
-        // Get value
-        else {
-          return editor.getValue();
-        }
-      }
-      else if(options === 'validate') {
-        if(!editor) throw "Must initialize jsoneditor before validating";
-        
-        // Validate a specific value
-        if(arguments.length > 1) {
-          return editor.validate(arguments[1]);
-        }
-        // Validate current value
-        else {
-          return editor.validate();
-        }
-      }
-      else if(options === 'destroy') {
-        if(editor) {
-          editor.destroy();
-          this.data('jsoneditor',null);
-        }
-      }
-      else {
-        // Destroy first
-        if(editor) {
-          editor.destroy();
-        }
-        
-        // Create editor
-        editor = new JSONEditor(this.get(0),options);
-        this.data('jsoneditor',editor);
-        
-        // Setup event listeners
-        editor.on('change',function() {
-          self.trigger('change');
-        });
-        editor.on('ready',function() {
-          self.trigger('ready');
-        });
-      }
-      
-      return this;
-    };
-  }
-})();
 
   window.JSONEditor = JSONEditor;
 })();
