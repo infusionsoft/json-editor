@@ -1002,25 +1002,24 @@ JSONEditor.Validator = Class.extend({
     if(typeof value === "number") {
       // `multipleOf` and `divisibleBy`
       if(schema.multipleOf || schema.divisibleBy) {
-        var divisor = schema.multipleOf || schema.divisibleBy;
-        // Vanilla JS, prone to floating point rounding errors (e.g. 1.14 / .01 == 113.99999)
-        valid = (value/divisor === Math.floor(value/divisor));
-
-        // Use math.js is available
-        if(window.math) {
-          valid = window.math.mod(window.math.bignumber(value), window.math.bignumber(divisor)).equals(0);
-        }
-        // Use decimal.js is available
-        else if(window.Decimal) {
-          valid = (new window.Decimal(value)).mod(new window.Decimal(divisor)).equals(0);
-        }
-
-        if(!valid) {
-          errors.push({
-            path: path,
-            property: schema.multipleOf? 'multipleOf' : 'divisibleBy',
-            message: this.translate('error_multipleOf', [divisor])
-          });
+          var divisor = (schema.multipleOf || schema.divisibleBy);
+          var dividend = value;
+          if(parseInt(divisor, 10) < divisor) {
+              var place = (divisor + "").split(".")[1].length;
+              var multiplier = Math.pow(10, parseInt(place, 10));
+              if(dividend.toFixed(place) == dividend) {
+                  divisor = Math.round(divisor * multiplier);
+                  dividend = Math.round(dividend * multiplier);
+              }
+          }
+          valid = dividend / divisor;
+          if(valid !== Math.floor(valid)) {
+              errors.push({
+                  path: path,
+                  property: schema.multipleOf? 'multipleOf' : 'divisibleBy',
+                  message: this.translate('error_multipleOf', [schema.multipleOf ||
+                      schema.divisibleBy])
+              });
         }
       }
 
