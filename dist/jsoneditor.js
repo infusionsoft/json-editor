@@ -1002,23 +1002,13 @@ JSONEditor.Validator = Class.extend({
     if(typeof value === "number") {
       // `multipleOf` and `divisibleBy`
       if(schema.multipleOf || schema.divisibleBy) {
-          var divisor = (schema.multipleOf || schema.divisibleBy);
-          var dividend = value;
-          if(parseInt(divisor, 10) < divisor) {
-              var place = (divisor + "").split(".")[1].length;
-              var multiplier = Math.pow(10, place);
-              if(dividend.toFixed(place) == dividend) {
-                  divisor = Math.round(divisor * multiplier);
-                  dividend = Math.round(dividend * multiplier);
-              }
-          }
-          valid = dividend / divisor;
-          if(valid !== Math.floor(valid)) {
-              errors.push({
-                  path: path,
-                  property: schema.multipleOf? 'multipleOf' : 'divisibleBy',
-                  message: this.translate('error_multipleOf', [schema.multipleOf || schema.divisibleBy])
-              });
+        valid = value / (schema.multipleOf || schema.divisibleBy);
+        if(valid !== Math.floor(valid)) {
+          errors.push({
+            path: path,
+            property: schema.multipleOf? 'multipleOf' : 'divisibleBy',
+            message: this.translate('error_multipleOf', [schema.multipleOf || schema.divisibleBy])
+          });
         }
       }
 
@@ -1999,6 +1989,10 @@ JSONEditor.defaults.editors.string = JSONEditor.AbstractEditor.extend({
     else {
       this.input_type = 'text';
       this.input = this.theme.getFormInputField(this.input_type);
+    }
+
+    if (this.schema.required) {
+        this.input.setAttribute('required', true);
     }
     
     // minLength, maxLength, and pattern
