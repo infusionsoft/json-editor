@@ -71,7 +71,7 @@ JSONEditor.defaults.editors.multiple = JSONEditor.AbstractEditor.extend({
     var self = this;
     var type = this.types[i];
     var holder = self.theme.getChildEditorHolder();
-    self.editor_holder.appendChild(holder);
+    JSONEditor.domMethods.appendChild(self.editor_holder, holder);
 
     var schema;
 
@@ -166,10 +166,10 @@ JSONEditor.defaults.editors.multiple = JSONEditor.AbstractEditor.extend({
     var container = this.container;
 
     this.header = this.label = this.theme.getFormInputLabel(this.getTitle());
-    this.container.appendChild(this.header);
+    JSONEditor.domMethods.appendChild(this.container, this.header);
 
     this.switcher = this.theme.getSwitcher(this.display_text);
-    container.appendChild(this.switcher);
+    JSONEditor.domMethods.appendChild(container, this.switcher);
     this.switcher.addEventListener('change',function(e) {
       e.preventDefault();
       e.stopPropagation();
@@ -179,8 +179,8 @@ JSONEditor.defaults.editors.multiple = JSONEditor.AbstractEditor.extend({
     });
 
     this.editor_holder = document.createElement('div');
-    container.appendChild(this.editor_holder);
-    
+    JSONEditor.domMethods.appendChild(container, this.editor_holder);
+
       
     var validator_options = {};
     if(self.jsoneditor.options.custom_validators) {
@@ -250,8 +250,12 @@ JSONEditor.defaults.editors.multiple = JSONEditor.AbstractEditor.extend({
     $each(this.editors, function(type,editor) {
       if(editor) editor.destroy();
     });
-    if(this.editor_holder && this.editor_holder.parentNode) this.editor_holder.parentNode.removeChild(this.editor_holder);
-    if(this.switcher && this.switcher.parentNode) this.switcher.parentNode.removeChild(this.switcher);
+    if(this.editor_holder && this.editor_holder.parentNode) {
+      JSONEditor.domMethods.removeChild(this.editor_holder.parentNode, this.editor_holder);
+    }
+    if(this.switcher && this.switcher.parentNode) {
+      JSONEditor.domMethods.removeChild(this.switcher.parentNode, this.switcher);
+    }
     this._super();
   },
   showValidationErrors: function(errors) {

@@ -23,11 +23,11 @@ JSONEditor.defaults.editors["enum"] = JSONEditor.AbstractEditor.extend({
 
     // Switcher
     this.switcher = this.theme.getSwitcher(this.select_options);
-    this.container.appendChild(this.switcher);
+    JSONEditor.domMethods.appendChild(this.container, this.switcher);
 
     // Display area
     this.display_area = this.theme.getIndentedPanel();
-    this.container.appendChild(this.display_area);
+    JSONEditor.domMethods.appendChild(this.container, this.display_area);
 
     if(this.options.hide_display) this.display_area.style.display = "none";
 
@@ -119,9 +119,15 @@ JSONEditor.defaults.editors["enum"] = JSONEditor.AbstractEditor.extend({
     }
   },
   destroy: function() {
-    if(this.display_area && this.display_area.parentNode) this.display_area.parentNode.removeChild(this.display_area);
-    if(this.title && this.title.parentNode) this.title.parentNode.removeChild(this.title);
-    if(this.switcher && this.switcher.parentNode) this.switcher.parentNode.removeChild(this.switcher);
+    if(this.display_area && this.display_area.parentNode) {
+      JSONEditor.domMethods.removeChild(this.display_area.parentNode, this.display_area);
+    }
+    if(this.title && this.title.parentNode) {
+      JSONEditor.domMethods.removeChild(this.title.parentNode, this.title);
+    }
+    if(this.switcher && this.switcher.parentNode) {
+      JSONEditor.domMethods.removeChild(this.switcher.parentNode, this.switcher);
+    }
 
     this._super();
   }

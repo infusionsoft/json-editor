@@ -163,7 +163,7 @@ JSONEditor.defaults.editors.selectize = JSONEditor.AbstractEditor.extend({
     });
 
     this.control = this.theme.getFormControl(this.label, this.input, this.description);
-    this.container.appendChild(this.control);
+    JSONEditor.domMethods.appendChild(this.container, this.control);
 
     this.value = this.enum_values[0];
   },
@@ -334,9 +334,15 @@ JSONEditor.defaults.editors.selectize = JSONEditor.AbstractEditor.extend({
     this._super();
   },
   destroy: function() {
-    if(this.label && this.label.parentNode) this.label.parentNode.removeChild(this.label);
-    if(this.description && this.description.parentNode) this.description.parentNode.removeChild(this.description);
-    if(this.input && this.input.parentNode) this.input.parentNode.removeChild(this.input);
+    if(this.label && this.label.parentNode) {
+      JSONEditor.domMethods.removeChild(this.label.parentNode, this.label);
+    }
+    if(this.description && this.description.parentNode) {
+      JSONEditor.domMethods.removeChild(this.description.parentNode, this.description);
+    }
+    if(this.input && this.input.parentNode) {
+      JSONEditor.domMethods.removeChild(this.input.parentNode, this.input);
+    }
     if(this.selectize) {
       this.selectize[0].selectize.destroy();
       this.selectize = null;

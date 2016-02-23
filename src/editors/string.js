@@ -256,7 +256,7 @@ JSONEditor.defaults.editors.string = JSONEditor.AbstractEditor.extend({
     if(this.format) this.input.setAttribute('data-schemaformat',this.format);
 
     this.control = this.theme.getFormControl(this.label, this.input, this.description);
-    this.container.appendChild(this.control);
+    JSONEditor.domMethods.appendChild(this.container, this.control);
 
     // Any special formatting that needs to happen after the input is added to the dom
     window.requestAnimationFrame(function() {
@@ -400,9 +400,15 @@ JSONEditor.defaults.editors.string = JSONEditor.AbstractEditor.extend({
     
     
     this.template = null;
-    if(this.input && this.input.parentNode) this.input.parentNode.removeChild(this.input);
-    if(this.label && this.label.parentNode) this.label.parentNode.removeChild(this.label);
-    if(this.description && this.description.parentNode) this.description.parentNode.removeChild(this.description);
+    if(this.input && this.input.parentNode) {
+      JSONEditor.domMethods.appendChild(this.input.parentNode, this.input);
+    }
+    if(this.label && this.label.parentNode) {
+      JSONEditor.domMethods.appendChild(this.label.parentNode, this.label);
+    }
+    if(this.description && this.description.parentNode) {
+      JSONEditor.domMethods.appendChild(this.description.parentNode, this.description);
+    }
 
     this._super();
   },

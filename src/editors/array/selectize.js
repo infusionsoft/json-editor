@@ -3,7 +3,7 @@ JSONEditor.defaults.editors.arraySelectize = JSONEditor.AbstractEditor.extend({
     this.title = this.theme.getFormInputLabel(this.getTitle());
 
     this.title_controls = this.theme.getHeaderButtonHolder();
-    this.title.appendChild(this.title_controls);
+    JSONEditor.domMethods.appendChild(this.title, this.title_controls);
     this.error_holder = document.createElement('div');
 
     if(this.schema.description) {
@@ -15,8 +15,8 @@ JSONEditor.defaults.editors.arraySelectize = JSONEditor.AbstractEditor.extend({
 
     var group = this.theme.getFormControl(this.title, this.input, this.description);
 
-    this.container.appendChild(group);
-    this.container.appendChild(this.error_holder);
+    JSONEditor.domMethods.appendChild(this.container, group);
+    JSONEditor.domMethods.appendChild(this.container, this.error_holder);
 
     window.jQuery(this.input).selectize({
       delimiter: false,
@@ -33,9 +33,15 @@ JSONEditor.defaults.editors.arraySelectize = JSONEditor.AbstractEditor.extend({
   },
   destroy: function() {
     this.empty(true);
-    if(this.title && this.title.parentNode) this.title.parentNode.removeChild(this.title);
-    if(this.description && this.description.parentNode) this.description.parentNode.removeChild(this.description);
-    if(this.input && this.input.parentNode) this.input.parentNode.removeChild(this.input);
+    if(this.title && this.title.parentNode) {
+      JSONEditor.domMethods.removeChild(this.title.parentNode, this.title);
+    }
+    if(this.description && this.description.parentNode) {
+      JSONEditor.domMethods.removeChild(this.description.parentNode, this.description);
+    }
+    if(this.input && this.input.parentNode) {
+      JSONEditor.domMethods.removeChild(this.input.parentNode, this.input);
+    }
 
     this._super();
   },
@@ -82,7 +88,7 @@ JSONEditor.defaults.editors.arraySelectize = JSONEditor.AbstractEditor.extend({
         this.error_holder.innerHTML = '';
         this.error_holder.style.display = '';
         $each(my_errors, function(i,error) {
-          self.error_holder.appendChild(self.theme.getErrorMessage(error.message));
+          JSONEditor.domMethods.appendChild(self.error_holder, self.theme.getErrorMessage(error.message));
         });
       }
       // Hide error area

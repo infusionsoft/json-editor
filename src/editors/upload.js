@@ -8,7 +8,7 @@ JSONEditor.defaults.editors.upload = JSONEditor.AbstractEditor.extend({
 
     // Input that holds the base64 string
     this.input = this.theme.getFormInputField('hidden');
-    this.container.appendChild(this.input);
+    JSONEditor.domMethods.appendChild(this.container, this.input);
     
     // Don't show uploader if this is readonly
     if(!this.schema.readOnly && !this.schema.readonly) {
@@ -39,10 +39,10 @@ JSONEditor.defaults.editors.upload = JSONEditor.AbstractEditor.extend({
     if (!description) description = '';
 
     this.preview = this.theme.getFormInputDescription(description);
-    this.container.appendChild(this.preview);
+    JSONEditor.domMethods.appendChild(this.container, this.preview);
 
     this.control = this.theme.getFormControl(this.label, this.uploader||this.input, this.preview);
-    this.container.appendChild(this.control);
+    JSONEditor.domMethods.appendChild(this.container, this.control);
   },
   refreshPreview: function() {
     if(this.last_preview === this.preview_value) return;
@@ -67,12 +67,12 @@ JSONEditor.defaults.editors.upload = JSONEditor.AbstractEditor.extend({
       img.style.maxWidth = '100%';
       img.style.maxHeight = '100px';
       img.src = this.preview_value;
-      this.preview.appendChild(img);
+      JSONEditor.domMethods.appendChild(this.preview, img);
     }
 
     this.preview.innerHTML += '<br>';
     var uploadButton = this.getButton('Upload', 'upload', 'Upload');
-    this.preview.appendChild(uploadButton);
+    JSONEditor.domMethods.appendChild(this.preview, uploadButton);
     uploadButton.addEventListener('click',function(event) {
       event.preventDefault();
 
@@ -81,7 +81,7 @@ JSONEditor.defaults.editors.upload = JSONEditor.AbstractEditor.extend({
 
       if (self.theme.getProgressBar) {
         self.progressBar = self.theme.getProgressBar();
-        self.preview.appendChild(self.progressBar);
+        JSONEditor.domMethods.appendChild(self.preview, self.progressBar);
       }
 
       self.jsoneditor.options.upload(self.path, file, {
@@ -91,12 +91,16 @@ JSONEditor.defaults.editors.upload = JSONEditor.AbstractEditor.extend({
           if(self.parent) self.parent.onChildEditorChange(self);
           else self.jsoneditor.onChange();
 
-          if (self.progressBar) self.preview.removeChild(self.progressBar);
+          if (self.progressBar) {
+            JSONEditor.domMethods.removeChild(self.preview, self.progressBar);
+          }
           uploadButton.removeAttribute("disabled");
         },
         failure: function(error) {
           self.theme.addInputError(self.uploader, error);
-          if (self.progressBar) self.preview.removeChild(self.progressBar);
+          if (self.progressBar) {
+            JSONEditor.domMethods.removeChild(self.preview, self.progressBar);
+          }
           uploadButton.removeAttribute("disabled");
         },
         updateProgress: function(progress) {
@@ -124,10 +128,18 @@ JSONEditor.defaults.editors.upload = JSONEditor.AbstractEditor.extend({
     }
   },
   destroy: function() {
-    if(this.preview && this.preview.parentNode) this.preview.parentNode.removeChild(this.preview);
-    if(this.title && this.title.parentNode) this.title.parentNode.removeChild(this.title);
-    if(this.input && this.input.parentNode) this.input.parentNode.removeChild(this.input);
-    if(this.uploader && this.uploader.parentNode) this.uploader.parentNode.removeChild(this.uploader);
+    if(this.preview && this.preview.parentNode) {
+      JSONEditor.domMethods.removeChild(this.preview.parentNode, this.preview);
+    }
+    if(this.title && this.title.parentNode) {
+      JSONEditor.domMethods.removeChild(this.title.parentNode, this.title);
+    }
+    if(this.input && this.input.parentNode) {
+      JSONEditor.domMethods.removeChild(this.input.parentNode, this.input);
+    }
+    if(this.uploader && this.uploader.parentNode) {
+      JSONEditor.domMethods.removeChild(this.uploader.parentNode, this.uploader);
+    }
 
     this._super();
   }

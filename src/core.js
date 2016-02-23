@@ -7,6 +7,19 @@ var JSONEditor = function(element,options) {
   this.options = options;
   this.init();
 };
+
+JSONEditor.domMethods = {
+  appendChild: function(parentElem, childElem) {
+    parentElem.appendChild(childElem);
+  },
+  removeChild: function(parentElem, childElem) {
+    parentElem.removeChild(childElem);
+  },
+  childNodes: function(parentElem) {
+    parentElem.children;
+  }
+};
+
 JSONEditor.prototype = {
   // necessary since we remove the ctor property by doing a literal assignment. Without this
   // the $isplainobject function will think that this is a plain object.

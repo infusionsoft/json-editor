@@ -40,7 +40,7 @@ JSONEditor.defaults.editors.checkbox = JSONEditor.AbstractEditor.extend({
       self.onChange(true);
     });
 
-    this.container.appendChild(this.control);
+    JSONEditor.domMethods.appendChild(this.container, this.control);
   },
   enable: function() {
     if(!this.always_disabled) {
@@ -53,9 +53,15 @@ JSONEditor.defaults.editors.checkbox = JSONEditor.AbstractEditor.extend({
     this._super();
   },
   destroy: function() {
-    if(this.label && this.label.parentNode) this.label.parentNode.removeChild(this.label);
-    if(this.description && this.description.parentNode) this.description.parentNode.removeChild(this.description);
-    if(this.input && this.input.parentNode) this.input.parentNode.removeChild(this.input);
+    if(this.label && this.label.parentNode) {
+      JSONEditor.domMethods.removeChild(this.label.parentNode, this.label);
+    }
+    if(this.description && this.description.parentNode) {
+      JSONEditor.domMethods.removeChild(this.description.parentNode, this.description);
+    }
+    if(this.input && this.input.parentNode) {
+      JSONEditor.domMethods.removeChild(this.input.parentNode, this.input);
+    }
     this._super();
   }
 });
