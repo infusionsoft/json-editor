@@ -49,84 +49,85 @@ module.exports = function(grunt) {
             'src/themes/*.js',
             'src/iconlib.js',
             'src/iconlibs/*.js',
-              
-          // The JS templating engines
+
+            // The JS templating engines
 //          'src/templates/*.js', // todo: remove all but default.js OR replace with Polymer template???
-          'src/templates/default.js', // package default only
-          // Set the defaults
-          'src/defaults.js',
-          
-          // Wrapper for $.fn style initialization
+            'src/templates/default.js', // package default only
+            // Set the defaults
+            'src/defaults.js',
+
+            // Wrapper for $.fn style initialization
 //          'src/jquery.js',  // todo: remove
-          
-          // End the closure
-          'src/outro.js'
-        ],
-        dest: 'dist/jsoneditor.js'
-      }
-    },
-    uglify: {
-      dist: {
-        src: 'dist/jsoneditor.js',
-        dest: 'dist/jsoneditor.min.js'
+
+            // End the closure
+            'src/outro.js'
+          ],
+          dest: 'dist/jsoneditor.js'
+        }
       },
-      options: {
-        preserveComments: 'some'
-      }
-    },
-    watch: {
-      scripts: {
-        files: ["src/**/*.js"],
-        tasks: ["concat_sourcemap"]
-      }
-    },
-    jshint: {
-      options: {
-        browser: true,
-        indent: 2,
-        nonbsp: true,
-        nonew: true,
-        immed: true,
-        latedef: true
+      uglify: {
+        dist: {
+          src: 'dist/jsoneditor.js',
+          dest: 'dist/jsoneditor.min.js'
+        },
+        options: {
+          preserveComments: 'some'
+        }
       },
-      beforeconcat: [
-        'src/class.js',
+      watch: {
+        scripts: {
+          files: ["src/**/*.js"],
+          tasks: ["concat_sourcemap"]
+        }
+      },
+      jshint: {
+        options: {
+          browser: true,
+          indent: 2,
+          nonbsp: true,
+          nonew: true,
+          immed: true,
+          latedef: true
+        },
+        beforeconcat: [
+          'src/class.js',
 //        'src/ie9.js',
-        
-        // Utils like extend, each, and trigger
-        'src/utilities.js',
 
-        // The main JSONEditor class
-        'src/core.js',
+          // Utils like extend, each, and trigger
+          'src/utilities.js',
 
-        // JSON Schema validator
-        'src/validator.js',
+          // The main JSONEditor class
+          'src/core.js',
 
-        // All the editors
-        'src/editor.js',
-        'src/editors/*.js',
+          // JSON Schema validator
+          'src/validator.js',
 
-        // All the themes and iconlibs
-        'src/theme.js',
+          // All the editors
+          'src/editor.js',
+          'src/editors/*.js',
+
+          // All the themes and iconlibs
+          'src/theme.js',
 //        'src/themes/*.js', // todo: remove
-        'src/iconlib.js',
+          'src/iconlib.js',
 //        'src/iconlibs/*.js', // todo: remove
 
-        // The JS templating engines
+          // The JS templating engines
 //        'src/templates/*.js',  // todo: remove (see above)
-        'src/templates/default.js', // package default only
-        // Set the defaults
-        'src/defaults.js',
+          'src/templates/default.js', // package default only
+          // Set the defaults
+          'src/defaults.js'
 
-        // Wrapper for $.fn style initialization
+          // Wrapper for $.fn style initialization
 //        'src/jquery.js' // todo: remove
-      ],
-      afterconcat: {
-        options: {
-          undef: true
-        },
-        files: {
-          src: ['dist/jsoneditor.js']
+        ],
+        afterconcat: {
+          options: {
+            undef: true
+          },
+          files: {
+            src: ['dist/jsoneditor.js']
+          }
         }
       }
     }
