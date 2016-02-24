@@ -10,13 +10,13 @@ var JSONEditor = function(element,options) {
 
 JSONEditor.domMethods = {
   appendChild: function(parentElem, childElem) {
-    if(parentElem && childElem) parentElem.appendChild(childElem);
+    parentElem.appendChild(childElem);
   },
   removeChild: function(parentElem, childElem) {
-    if(parentElem && childElem) parentElem.removeChild(childElem);
+    parentElem.removeChild(childElem);
   },
   insertBefore: function(parentElem, childElem, beforeChildElem) {
-    if(parentElem && parentElem && beforeChildElem) parentElem.insertBefore(childElem, beforeChildElem);
+    parentElem.insertBefore(childElem, beforeChildElem);
   }
 };
 
@@ -43,7 +43,7 @@ JSONEditor.prototype = {
     if(icon_class) this.iconlib = new icon_class();
 
     this.root_container = this.theme.getContainer();
-    this.element.appendChild(this.root_container);
+    JSONEditor.domMethods.appendChild(this.element, this.root_container);
     
     this.translate = this.options.translate || JSONEditor.defaults.translate;
 
