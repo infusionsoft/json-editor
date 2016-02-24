@@ -43,7 +43,7 @@ JSONEditor.defaults.editors.multiselect = JSONEditor.AbstractEditor.extend({
       this.input.size = Math.min(10,this.option_keys.length);
 
       for(i=0; i<this.option_keys.length; i++) {
-        this.select_options[this.option_keys[i]] = JSONEditor.domMethods.childNodes(this.input)[i];
+        this.select_options[this.option_keys[i]] = this.input.children[i];
       }
 
       if(this.schema.readOnly || this.schema.readonly) {

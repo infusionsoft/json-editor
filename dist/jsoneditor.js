@@ -237,7 +237,7 @@ JSONEditor.prototype = {
     if(icon_class) this.iconlib = new icon_class();
 
     this.root_container = this.theme.getContainer();
-    this.element.appendChild(this.root_container);
+    JSONEditor.domMethods.appendChild(this.element, this.root_container);
     
     this.translate = this.options.translate || JSONEditor.defaults.translate;
 
@@ -1488,7 +1488,7 @@ JSONEditor.AbstractEditor = Class.extend({
     // Add links
     if(!this.no_link_holder) {
       this.link_holder = this.theme.getLinksHolder();
-      this.container.appendChild(this.link_holder);
+      JSONEditor.domMethods.appendChild(this.container, this.link_holder);
       if(this.schema.links) {
         for(var i=0; i<this.schema.links.length; i++) {
           this.addLink(this.getLink(this.schema.links[i]));
@@ -1524,7 +1524,9 @@ JSONEditor.AbstractEditor = Class.extend({
     return this.theme.setButtonText(button, text, icon, title);
   },
   addLink: function(link) {
-    if(this.link_holder) this.link_holder.appendChild(link);
+    if(this.link_holder) {
+      JSONEditor.domMethods.appendChild(this.link_holder, link);
+    }
   },
   getLink: function(data) {
     var holder, link;
@@ -1688,7 +1690,9 @@ JSONEditor.AbstractEditor = Class.extend({
     this.header_text = null;
     this.header_template = null;
     this.value = null;
-    if(this.container && this.container.parentNode) this.container.parentNode.removeChild(this.container);
+    if(this.container && this.container.parentNode) {
+      JSONEditor.domMethods.removeChild(this.container.parentNode, this.container);
+    }
     this.container = null;
     this.jsoneditor = null;
     this.schema = null;
@@ -2076,7 +2080,7 @@ JSONEditor.defaults.editors.string = JSONEditor.AbstractEditor.extend({
     if(this.format) this.input.setAttribute('data-schemaformat',this.format);
 
     this.control = this.theme.getFormControl(this.label, this.input, this.description);
-    this.container.appendChild(this.control);
+    JSONEditor.domMethods.appendChild(this.container, this.control);
 
     // Any special formatting that needs to happen after the input is added to the dom
     window.requestAnimationFrame(function() {
@@ -2220,9 +2224,15 @@ JSONEditor.defaults.editors.string = JSONEditor.AbstractEditor.extend({
     
     
     this.template = null;
-    if(this.input && this.input.parentNode) this.input.parentNode.removeChild(this.input);
-    if(this.label && this.label.parentNode) this.label.parentNode.removeChild(this.label);
-    if(this.description && this.description.parentNode) this.description.parentNode.removeChild(this.description);
+    if(this.input && this.input.parentNode) {
+      JSONEditor.domMethods.removeChild(this.input.parentNode, this.input);
+    }
+    if(this.label && this.label.parentNode) {
+      JSONEditor.domMethods.removeChild(this.label.parentNode, this.label);
+    }
+    if(this.description && this.description.parentNode) {
+      JSONEditor.domMethods.removeChild(this.description.parentNode, this.description);
+    }
 
     this._super();
   },
@@ -2433,7 +2443,7 @@ JSONEditor.defaults.editors.object = JSONEditor.AbstractEditor.extend({
       container = document.createElement('div');
       for(i=0; i<rows.length; i++) {
         var row = this.theme.getGridRow();
-        container.appendChild(row);
+        JSONEditor.domMethods.appendChild(container, row);
         for(j=0; j<rows[i].editors.length; j++) {
           var key = rows[i].editors[j].key;
           var editor = this.editors[key];
@@ -2441,7 +2451,7 @@ JSONEditor.defaults.editors.object = JSONEditor.AbstractEditor.extend({
           if(editor.options.hidden) editor.container.style.display = 'none';
           else this.theme.setGridColumnSize(editor.container,rows[i].editors[j].width);
           editor.container.classList.add("container-" + key);
-          row.appendChild(editor.container);
+          JSONEditor.domMethods.appendChild(row, editor.container);
         }
       }
     }
@@ -2452,16 +2462,16 @@ JSONEditor.defaults.editors.object = JSONEditor.AbstractEditor.extend({
         var editor = self.editors[key];
         if(editor.property_removed) return;
         var row = self.theme.getGridRow();
-        container.appendChild(row);
+        JSONEditor.domMethods.appendChild(container, row);
         
         if(editor.options.hidden) editor.container.style.display = 'none';
         else self.theme.setGridColumnSize(editor.container,12);
         editor.container.classList.add("container-" + key);
-        row.appendChild(editor.container);
+        JSONEditor.domMethods.appendChild(row, editor.container);
       });
     }
     this.row_container.innerHTML = '';
-    this.row_container.appendChild(container);
+    JSONEditor.domMethods.appendChild(this.row_container, container);
   },
   getPropertySchema: function(key) {
     // Schema declared directly in properties
@@ -2565,7 +2575,7 @@ JSONEditor.defaults.editors.object = JSONEditor.AbstractEditor.extend({
       this.editor_holder = this.container;
       $each(this.editors, function(key,editor) {
         var holder = self.theme.getTableCell();
-        self.editor_holder.appendChild(holder);
+        JSONEditor.domMethods.appendChild(self.editor_holder, holder);
 
         editor.setContainer(holder);
         editor.build();
@@ -2589,7 +2599,7 @@ JSONEditor.defaults.editors.object = JSONEditor.AbstractEditor.extend({
       this.header = document.createElement('span');
       this.header.textContent = this.getTitle();
       this.title = this.theme.getHeader(this.header);
-      this.container.appendChild(this.title);
+      JSONEditor.domMethods.appendChild(this.container, this.title);
       this.container.style.position = 'relative';
       
       // Edit JSON modal
@@ -2610,9 +2620,9 @@ JSONEditor.defaults.editors.object = JSONEditor.AbstractEditor.extend({
         e.stopPropagation();
         self.hideEditJSON();
       });
-      this.editjson_holder.appendChild(this.editjson_textarea);
-      this.editjson_holder.appendChild(this.editjson_save);
-      this.editjson_holder.appendChild(this.editjson_cancel);
+      JSONEditor.domMethods.appendChild(this.editjson_holder, this.editjson_textarea);
+      JSONEditor.domMethods.appendChild(this.editjson_holder, this.editjson_save);
+      JSONEditor.domMethods.appendChild(this.editjson_holder, this.editjson_cancel);
       
       // Manage Properties modal
       this.addproperty_holder = this.theme.getModal();
@@ -2646,35 +2656,35 @@ JSONEditor.defaults.editors.object = JSONEditor.AbstractEditor.extend({
           self.onChange(true);
         }
       });
-      this.addproperty_holder.appendChild(this.addproperty_list);
-      this.addproperty_holder.appendChild(this.addproperty_input);
-      this.addproperty_holder.appendChild(this.addproperty_add);
+      JSONEditor.domMethods.appendChild(this.addproperty_holder, this.addproperty_list);
+      JSONEditor.domMethods.appendChild(this.addproperty_holder, this.addproperty_input);
+      JSONEditor.domMethods.appendChild(this.addproperty_holder, this.addproperty_add);
       var spacer = document.createElement('div');
       spacer.style.clear = 'both';
-      this.addproperty_holder.appendChild(spacer);
+      JSONEditor.domMethods.appendChild(this.addproperty_holder, spacer);
       
       
       // Description
       if(this.schema.description) {
         this.description = this.theme.getDescription(this.schema.description);
-        this.container.appendChild(this.description);
+        JSONEditor.domMethods.appendChild(this.container, this.description);
       }
       
       // Validation error placeholder area
       this.error_holder = document.createElement('div');
-      this.container.appendChild(this.error_holder);
+      JSONEditor.domMethods.appendChild(this.container, this.error_holder);
       
       // Container for child editor area
       this.editor_holder = this.theme.getIndentedPanel();
-      this.container.appendChild(this.editor_holder);
+      JSONEditor.domMethods.appendChild(this.container, this.editor_holder);
 
       // Container for rows of child editors
       this.row_container = this.theme.getGridContainer();
-      this.editor_holder.appendChild(this.row_container);
+      JSONEditor.domMethods.appendChild(this.editor_holder, this.row_container);
 
       $each(this.editors, function(key,editor) {
         var holder = self.theme.getGridColumn();
-        self.row_container.appendChild(holder);
+        JSONEditor.domMethods.appendChild(self.row_container, holder);
 
         editor.setContainer(holder);
         editor.build();
@@ -2685,14 +2695,14 @@ JSONEditor.defaults.editors.object = JSONEditor.AbstractEditor.extend({
       this.title_controls = this.theme.getHeaderButtonHolder();
       this.editjson_controls = this.theme.getHeaderButtonHolder();
       this.addproperty_controls = this.theme.getHeaderButtonHolder();
-      this.title.appendChild(this.title_controls);
-      this.title.appendChild(this.editjson_controls);
-      this.title.appendChild(this.addproperty_controls);
+      JSONEditor.domMethods.appendChild(this.title, this.title_controls);
+      JSONEditor.domMethods.appendChild(this.title, this.editjson_controls);
+      JSONEditor.domMethods.appendChild(this.title, this.addproperty_controls);
 
       // Show/Hide button
       this.collapsed = false;
       this.toggle_button = this.getButton('','collapse','Collapse');
-      this.title_controls.appendChild(this.toggle_button);
+      JSONEditor.domMethods.appendChild(this.title_controls, this.toggle_button);
       this.toggle_button.addEventListener('click',function(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -2728,8 +2738,8 @@ JSONEditor.defaults.editors.object = JSONEditor.AbstractEditor.extend({
         e.stopPropagation();
         self.toggleEditJSON();
       });
-      this.editjson_controls.appendChild(this.editjson_button);
-      this.editjson_controls.appendChild(this.editjson_holder);
+      JSONEditor.domMethods.appendChild(this.editjson_controls, this.editjson_button);
+      JSONEditor.domMethods.appendChild(this.editjson_controls, this.editjson_holder);
       
       // Edit JSON Buttton disabled
       if(this.schema.options && typeof this.schema.options.disable_edit_json !== "undefined") {
@@ -2746,8 +2756,8 @@ JSONEditor.defaults.editors.object = JSONEditor.AbstractEditor.extend({
         e.stopPropagation();
         self.toggleAddProperty();
       });
-      this.addproperty_controls.appendChild(this.addproperty_button);
-      this.addproperty_controls.appendChild(this.addproperty_holder);
+      JSONEditor.domMethods.appendChild(this.addproperty_controls, this.addproperty_button);
+      JSONEditor.domMethods.appendChild(this.addproperty_controls, this.addproperty_holder);
       this.refreshAddProperties();
     }
     
@@ -2755,7 +2765,7 @@ JSONEditor.defaults.editors.object = JSONEditor.AbstractEditor.extend({
     if(this.options.table_row) {
       this.editor_holder = this.container;
       $each(this.property_order,function(i,key) {
-        self.editor_holder.appendChild(self.editors[key].container);
+        JSONEditor.domMethods.appendChild(self.editor_holder, self.editors[key].container);
       });
     }
     // Layout object editors in grid if needed
@@ -2826,7 +2836,7 @@ JSONEditor.defaults.editors.object = JSONEditor.AbstractEditor.extend({
       }
     }
     if (control) {
-      this.addproperty_list.appendChild(control);
+      JSONEditor.domMethods.appendChild(this.addproperty_list, control);
     }
   },
   addPropertyCheckbox: function(key) {
@@ -2937,7 +2947,7 @@ JSONEditor.defaults.editors.object = JSONEditor.AbstractEditor.extend({
       
       if(!prebuild_only) {
         var holder = self.theme.getChildEditorHolder();
-        self.editor_holder.appendChild(holder);
+        JSONEditor.domMethods.appendChild(self.editor_holder, holder);
         self.editors[name].setContainer(holder);
         self.editors[name].build();
         self.editors[name].postBuild();
@@ -2967,12 +2977,18 @@ JSONEditor.defaults.editors.object = JSONEditor.AbstractEditor.extend({
       el.destroy();
     });
     if(this.editor_holder) this.editor_holder.innerHTML = '';
-    if(this.title && this.title.parentNode) this.title.parentNode.removeChild(this.title);
-    if(this.error_holder && this.error_holder.parentNode) this.error_holder.parentNode.removeChild(this.error_holder);
+    if(this.title && this.title.parentNode) {
+      JSONEditor.domMethods.removeChild(this.title.parentNode, this.title);
+    }
+    if(this.error_holder && this.error_holder.parentNode) {
+      JSONEditor.domMethods.removeChild(this.error_holder.parentNode, this.error_holder);
+    }
 
     this.editors = null;
     this.cached_editors = null;
-    if(this.editor_holder && this.editor_holder.parentNode) this.editor_holder.parentNode.removeChild(this.editor_holder);
+    if(this.editor_holder && this.editor_holder.parentNode) {
+      JSONEditor.domMethods.removeChild(this.editor_holder.parentNode, this.editor_holder);
+    }
     this.editor_holder = null;
 
     this._super();
@@ -3143,7 +3159,7 @@ JSONEditor.defaults.editors.object = JSONEditor.AbstractEditor.extend({
         this.error_holder.innerHTML = '';
         this.error_holder.style.display = '';
         $each(my_errors, function(i,error) {
-          self.error_holder.appendChild(self.theme.getErrorMessage(error.message));
+          JSONEditor.domMethods.appendChild(self.error_holder, self.theme.getErrorMessage(error.message));
         });
       }
       // Hide error area
@@ -3248,41 +3264,41 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
       this.header = document.createElement('span');
       this.header.textContent = this.getTitle();
       this.title = this.theme.getHeader(this.header);
-      this.container.appendChild(this.title);
+      JSONEditor.domMethods.appendChild(this.container, this.title);
       this.title_controls = this.theme.getHeaderButtonHolder();
-      this.title.appendChild(this.title_controls);
+      JSONEditor.domMethods.appendChild(this.title, this.title_controls);
       if(this.schema.description) {
         this.description = this.theme.getDescription(this.schema.description);
-        this.container.appendChild(this.description);
+        JSONEditor.domMethods.appendChild(this.container, this.description);
       }
       this.error_holder = document.createElement('div');
-      this.container.appendChild(this.error_holder);
+      JSONEditor.domMethods.appendChild(this.container, this.error_holder);
 
       if(this.schema.format === 'tabs') {
         this.controls = this.theme.getHeaderButtonHolder();
-        this.title.appendChild(this.controls);
+        JSONEditor.domMethods.appendChild(this.title, this.controls);
         this.tabs_holder = this.theme.getTabHolder();
-        this.container.appendChild(this.tabs_holder);
+        JSONEditor.domMethods.appendChild(this.container, this.tabs_holder);
         this.row_holder = this.theme.getTabContentHolder(this.tabs_holder);
 
         this.active_tab = null;
       }
       else {
         this.panel = this.theme.getIndentedPanel();
-        this.container.appendChild(this.panel);
+        JSONEditor.domMethods.appendChild(this.container, this.panel);
         this.row_holder = document.createElement('div');
-        this.panel.appendChild(this.row_holder);
+        JSONEditor.domMethods.appendChild(this.panel, this.row_holder);
         this.controls = this.theme.getButtonHolder();
-        this.panel.appendChild(this.controls);
+        JSONEditor.domMethods.appendChild(this.panel, this.controls);
       }
     }
     else {
         this.panel = this.theme.getIndentedPanel();
-        this.container.appendChild(this.panel);
+        JSONEditor.domMethods.appendChild(this.container, this.panel);
         this.controls = this.theme.getButtonHolder();
-        this.panel.appendChild(this.controls);
+        JSONEditor.domMethods.appendChild(this.panel, this.controls);
         this.row_holder = document.createElement('div');
-        this.panel.appendChild(this.row_holder);
+        JSONEditor.domMethods.appendChild(this.panel, this.row_holder);
     }
 
     // Add controls
@@ -3365,7 +3381,7 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
       holder = this.theme.getIndentedPanel();
     }
 
-    this.row_holder.appendChild(holder);
+    JSONEditor.domMethods.appendChild(this.row_holder, holder);
 
     var ret = this.jsoneditor.createEditor(editor,{
       jsoneditor: this.jsoneditor,
@@ -3381,18 +3397,28 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
 
     if(!ret.title_controls) {
       ret.array_controls = this.theme.getButtonHolder();
-      holder.appendChild(ret.array_controls);
+      JSONEditor.domMethods.appendChild(holder, ret.array_controls);
     }
     
     return ret;
   },
   destroy: function() {
     this.empty(true);
-    if(this.title && this.title.parentNode) this.title.parentNode.removeChild(this.title);
-    if(this.description && this.description.parentNode) this.description.parentNode.removeChild(this.description);
-    if(this.row_holder && this.row_holder.parentNode) this.row_holder.parentNode.removeChild(this.row_holder);
-    if(this.controls && this.controls.parentNode) this.controls.parentNode.removeChild(this.controls);
-    if(this.panel && this.panel.parentNode) this.panel.parentNode.removeChild(this.panel);
+    if(this.title && this.title.parentNode) {
+      JSONEditor.domMethods.removeChild(this.title.parentNode, this.title);
+    }
+    if(this.description && this.description.parentNode) {
+      JSONEditor.domMethods.removeChild(this.description.parentNode, this.description);
+    }
+    if(this.row_holder && this.row_holder.parentNode) {
+      JSONEditor.domMethods.removeChild(this.row_holder.parentNode, this.row_holder);
+    }
+    if(this.controls && this.controls.parentNode) {
+      JSONEditor.domMethods.removeChild(this.controls.parentNode, this.controls);
+    }
+    if(this.panel && this.panel.parentNode) {
+      JSONEditor.domMethods.removeChild(this.panel.parentNode, this.panel);
+    }
     
     this.rows = this.row_cache = this.title = this.description = this.row_holder = this.panel = this.controls = null;
 
@@ -3403,7 +3429,9 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
     var self = this;
     $each(this.rows,function(i,row) {
       if(hard) {
-        if(row.tab && row.tab.parentNode) row.tab.parentNode.removeChild(row.tab);
+        if(row.tab && row.tab.parentNode) {
+          JSONEditor.domMethods.removeChild(row.tab.parentNode, row.tab);
+        }
         self.destroyRow(row,true);
         self.row_cache[i] = null;
       }
@@ -3416,8 +3444,12 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
     var holder = row.container;
     if(hard) {
       row.destroy();
-      if(holder.parentNode) holder.parentNode.removeChild(holder);
-      if(row.tab && row.tab.parentNode) row.tab.parentNode.removeChild(row.tab);
+      if(holder.parentNode) {
+        JSONEditor.domMethods.removeChild(holder.parentNode, holder);
+      }
+      if(row.tab && row.tab.parentNode) {
+        JSONEditor.domMethods.removeChild(row.tab.parentNode, row.tab);
+      }
     }
     else {
       if(row.tab) row.tab.style.display = 'none';
@@ -3665,7 +3697,7 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
       });
       
       if(controls_holder) {
-        controls_holder.appendChild(self.rows[i].delete_button);
+        JSONEditor.domMethods.appendChild(controls_holder, self.rows[i].delete_button);
       }
     }
     
@@ -3692,7 +3724,7 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
       });
       
       if(controls_holder) {
-        controls_holder.appendChild(self.rows[i].moveup_button);
+        JSONEditor.domMethods.appendChild(controls_holder, self.rows[i].moveup_button);
       }
     }
     
@@ -3718,7 +3750,7 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
       });
       
       if(controls_holder) {
-        controls_holder.appendChild(self.rows[i].movedown_button);
+        JSONEditor.domMethods.appendChild(controls_holder, self.rows[i].movedown_button);
       }
     }
 
@@ -3730,7 +3762,7 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
     
     this.collapsed = false;
     this.toggle_button = this.getButton('','collapse',this.translate('button_collapse'));
-    this.title_controls.appendChild(this.toggle_button);
+    JSONEditor.domMethods.appendChild(this.title_controls, this.toggle_button);
     var row_holder_display = self.row_holder.style.display;
     var controls_display = self.controls.style.display;
     this.toggle_button.addEventListener('click',function(e) {
@@ -3789,7 +3821,7 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
       self.refreshValue();
       self.onChange(true);
     });
-    self.controls.appendChild(this.add_row_button);
+    JSONEditor.domMethods.appendChild(self.controls, this.add_row_button);
 
     this.delete_last_row_button = this.getButton(this.translate('button_delete_last',[this.getItemTitle()]),'delete',this.translate('button_delete_last_title',[this.getItemTitle()]));
     this.delete_last_row_button.addEventListener('click',function(e) {
@@ -3808,7 +3840,7 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
       }
       self.onChange(true);
     });
-    self.controls.appendChild(this.delete_last_row_button);
+    JSONEditor.domMethods.appendChild(self.controls, this.delete_last_row_button);
 
     this.remove_all_rows_button = this.getButton(this.translate('button_delete_all'),'delete',this.translate('button_delete_all_title'));
     this.remove_all_rows_button.addEventListener('click',function(e) {
@@ -3817,7 +3849,7 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
       self.setValue([]);
       self.onChange(true);
     });
-    self.controls.appendChild(this.remove_all_rows_button);
+    JSONEditor.domMethods.appendChild(self.controls, this.remove_all_rows_button);
 
     if(self.tabs) {
       this.add_row_button.style.width = '100%';
@@ -3855,7 +3887,7 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
         this.error_holder.innerHTML = '';
         this.error_holder.style.display = '';
         $each(my_errors, function(i,error) {
-          self.error_holder.appendChild(self.theme.getErrorMessage(error.message));
+          JSONEditor.domMethods.appendChild(self.error_holder, self.theme.getErrorMessage(error.message));
         });
       }
       // Hide error area
@@ -3903,13 +3935,13 @@ JSONEditor.defaults.editors.table = JSONEditor.defaults.editors.array.extend({
   build: function() {
     var self = this;
     this.table = this.theme.getTable();
-    this.container.appendChild(this.table);
+    JSONEditor.domMethods.appendChild(this.container, this.table);
     this.thead = this.theme.getTableHead();
-    this.table.appendChild(this.thead);
+    JSONEditor.domMethods.appendChild(this.table, this.thead);
     this.header_row = this.theme.getTableRow();
-    this.thead.appendChild(this.header_row);
+    JSONEditor.domMethods.appendChild(this.thead, this.header_row);
     this.row_holder = this.theme.getTableBody();
-    this.table.appendChild(this.row_holder);
+    JSONEditor.domMethods.appendChild(this.table, this.row_holder);
 
     // Determine the default value of array element
     var tmp = this.getElementEditor(0,true);
@@ -3918,26 +3950,26 @@ JSONEditor.defaults.editors.table = JSONEditor.defaults.editors.array.extend({
     
     if(!this.options.compact) {
       this.title = this.theme.getHeader(this.getTitle());
-      this.container.appendChild(this.title);
+      JSONEditor.domMethods.appendChild(this.container, this.title);
       this.title_controls = this.theme.getHeaderButtonHolder();
-      this.title.appendChild(this.title_controls);
+      JSONEditor.domMethods.appendChild(this.title, this.title_controls);
       if(this.schema.description) {
         this.description = this.theme.getDescription(this.schema.description);
-        this.container.appendChild(this.description);
+        JSONEditor.domMethods.appendChild(this.container, this.description);
       }
       this.panel = this.theme.getIndentedPanel();
-      this.container.appendChild(this.panel);
+      JSONEditor.domMethods.appendChild(this.container, this.panel);
       this.error_holder = document.createElement('div');
-      this.panel.appendChild(this.error_holder);
+      JSONEditor.domMethods.appendChild(this.panel, this.error_holder);
     }
     else {
       this.panel = document.createElement('div');
-      this.container.appendChild(this.panel);
+      JSONEditor.domMethods.appendChild(this.container, this.panel);
     }
 
-    this.panel.appendChild(this.table);
+    JSONEditor.domMethods.appendChild(this.panel, this.table);
     this.controls = this.theme.getButtonHolder();
-    this.panel.appendChild(this.controls);
+    JSONEditor.domMethods.appendChild(this.panel, this.controls);
 
     if(this.item_has_child_editors) {
       var ce = tmp.getChildEditors();
@@ -3945,11 +3977,11 @@ JSONEditor.defaults.editors.table = JSONEditor.defaults.editors.array.extend({
       for(var i=0; i<order.length; i++) {
         var th = self.theme.getTableHeaderCell(ce[order[i]].getTitle());
         if(ce[order[i]].options.hidden) th.style.display = 'none';
-        self.header_row.appendChild(th);
+        JSONEditor.domMethods.appendChild(self.header_row, th);
       }
     }
     else {
-      self.header_row.appendChild(self.theme.getTableHeaderCell(this.item_title));
+      JSONEditor.domMethods.appendChild(self.header_row, self.theme.getTableHeaderCell(this.item_title));
     }
 
     tmp.destroy();
@@ -3957,7 +3989,7 @@ JSONEditor.defaults.editors.table = JSONEditor.defaults.editors.array.extend({
 
     // Row Controls column
     this.controls_header_cell = self.theme.getTableHeaderCell(" ");
-    self.header_row.appendChild(this.controls_header_cell);
+    JSONEditor.domMethods.appendChild(self.header_row, this.controls_header_cell);
 
     // Add controls
     this.addControls();
@@ -3975,11 +4007,11 @@ JSONEditor.defaults.editors.table = JSONEditor.defaults.editors.array.extend({
   getElementEditor: function(i,ignore) {
     var schema_copy = $extend({},this.schema.items);
     var editor = this.jsoneditor.getEditorClass(schema_copy, this.jsoneditor);
-    var row = this.row_holder.appendChild(this.theme.getTableRow());
+    var row = JSONEditor.domMethods.appendChild(this.row_holder, this.theme.getTableRow());
     var holder = row;
     if(!this.item_has_child_editors) {
       holder = this.theme.getTableCell();
-      row.appendChild(holder);
+      JSONEditor.domMethods.appendChild(row, holder);
     }
 
     var ret = this.jsoneditor.createEditor(editor,{
@@ -3997,10 +4029,10 @@ JSONEditor.defaults.editors.table = JSONEditor.defaults.editors.array.extend({
       ret.build();
       ret.postBuild();
 
-      ret.controls_cell = row.appendChild(this.theme.getTableCell());
+      ret.controls_cell = JSONEditor.domMethods.appendChild(row, this.theme.getTableCell());
       ret.row = row;
       ret.table_controls = this.theme.getButtonHolder();
-      ret.controls_cell.appendChild(ret.table_controls);
+      JSONEditor.domMethods.appendChild(ret.controls_cell, ret.table_controls);
       ret.table_controls.style.margin = 0;
       ret.table_controls.style.padding = 0;
     }
@@ -4009,11 +4041,21 @@ JSONEditor.defaults.editors.table = JSONEditor.defaults.editors.array.extend({
   },
   destroy: function() {
     this.innerHTML = '';
-    if(this.title && this.title.parentNode) this.title.parentNode.removeChild(this.title);
-    if(this.description && this.description.parentNode) this.description.parentNode.removeChild(this.description);
-    if(this.row_holder && this.row_holder.parentNode) this.row_holder.parentNode.removeChild(this.row_holder);
-    if(this.table && this.table.parentNode) this.table.parentNode.removeChild(this.table);
-    if(this.panel && this.panel.parentNode) this.panel.parentNode.removeChild(this.panel);
+    if(this.title && this.title.parentNode) {
+      JSONEditor.domMethods.removeChild(this.title.parentNode, this.title);
+    }
+    if(this.description && this.description.parentNode) {
+      JSONEditor.domMethods.removeChild(this.description.parentNode, this.description);
+    }
+    if(this.row_holder && this.row_holder.parentNode) {
+      JSONEditor.domMethods.removeChild(this.row_holder.parentNode, this.row_holder);
+    }
+    if(this.table && this.table.parentNode) {
+      JSONEditor.domMethods.removeChild(this.table.parentNode, this.table);
+    }
+    if(this.panel && this.panel.parentNode) {
+      JSONEditor.domMethods.removeChild(this.panel.parentNode, this.panel);
+    }
 
     this.rows = this.title = this.description = this.row_holder = this.table = this.panel = null;
 
@@ -4053,10 +4095,12 @@ JSONEditor.defaults.editors.table = JSONEditor.defaults.editors.array.extend({
     for(var j=value.length; j<self.rows.length; j++) {
       var holder = self.rows[j].container;
       if(!self.item_has_child_editors) {
-        self.rows[j].row.parentNode.removeChild(self.rows[j].row);
+        JSONEditor.domMethods.removeChild(self.rows[j].row.parentNode, self.rows[j].row);
       }
       self.rows[j].destroy();
-      if(holder.parentNode) holder.parentNode.removeChild(holder);
+      if(holder.parentNode) {
+        JSONEditor.domMethods.removeChild(holder.parentNode, holder);
+      }
       self.rows[j] = null;
       numrows_changed = true;
     }
@@ -4208,7 +4252,7 @@ JSONEditor.defaults.editors.table = JSONEditor.defaults.editors.array.extend({
         self.setValue(newval);
         self.onChange(true);
       });
-      controls_holder.appendChild(self.rows[i].delete_button);
+      JSONEditor.domMethods.appendChild(controls_holder, self.rows[i].delete_button);
     }
 
     
@@ -4230,7 +4274,7 @@ JSONEditor.defaults.editors.table = JSONEditor.defaults.editors.array.extend({
         self.setValue(rows);
         self.onChange(true);
       });
-      controls_holder.appendChild(self.rows[i].moveup_button);
+      JSONEditor.domMethods.appendChild(controls_holder, self.rows[i].moveup_button);
     }
     
     if(!this.hide_move_buttons) {
@@ -4250,7 +4294,7 @@ JSONEditor.defaults.editors.table = JSONEditor.defaults.editors.array.extend({
         self.setValue(rows);
         self.onChange(true);
       });
-      controls_holder.appendChild(self.rows[i].movedown_button);
+      JSONEditor.domMethods.appendChild(controls_holder, self.rows[i].movedown_button);
     }
 
     if(value) self.rows[i].setValue(value);
@@ -4261,7 +4305,7 @@ JSONEditor.defaults.editors.table = JSONEditor.defaults.editors.array.extend({
     this.collapsed = false;
     this.toggle_button = this.getButton('','collapse',this.translate('button_collapse'));
     if(this.title_controls) {
-      this.title_controls.appendChild(this.toggle_button);
+      JSONEditor.domMethods.appendChild(this.title_controls, this.toggle_button);
       this.toggle_button.addEventListener('click',function(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -4303,7 +4347,7 @@ JSONEditor.defaults.editors.table = JSONEditor.defaults.editors.array.extend({
       self.refreshRowButtons();
       self.onChange(true);
     });
-    self.controls.appendChild(this.add_row_button);
+    JSONEditor.domMethods.appendChild(self.controls, this.add_row_button);
 
     this.delete_last_row_button = this.getButton(this.translate('button_delete_last',[this.getItemTitle()]),'delete',this.translate('button_delete_last_title',[this.getItemTitle()]));
     this.delete_last_row_button.addEventListener('click',function(e) {
@@ -4315,7 +4359,7 @@ JSONEditor.defaults.editors.table = JSONEditor.defaults.editors.array.extend({
       self.setValue(rows);
       self.onChange(true);
     });
-    self.controls.appendChild(this.delete_last_row_button);
+    JSONEditor.domMethods.appendChild(self.controls, this.delete_last_row_button);
 
     this.remove_all_rows_button = this.getButton(this.translate('button_delete_all'),'delete',this.translate('button_delete_all_title'));
     this.remove_all_rows_button.addEventListener('click',function(e) {
@@ -4325,7 +4369,7 @@ JSONEditor.defaults.editors.table = JSONEditor.defaults.editors.array.extend({
       self.setValue([]);
       self.onChange(true);
     });
-    self.controls.appendChild(this.remove_all_rows_button);
+    JSONEditor.domMethods.appendChild(self.controls, this.remove_all_rows_button);
   }
 });
 
@@ -4402,7 +4446,7 @@ JSONEditor.defaults.editors.multiple = JSONEditor.AbstractEditor.extend({
     var self = this;
     var type = this.types[i];
     var holder = self.theme.getChildEditorHolder();
-    self.editor_holder.appendChild(holder);
+    JSONEditor.domMethods.appendChild(self.editor_holder, holder);
 
     var schema;
 
@@ -4497,10 +4541,10 @@ JSONEditor.defaults.editors.multiple = JSONEditor.AbstractEditor.extend({
     var container = this.container;
 
     this.header = this.label = this.theme.getFormInputLabel(this.getTitle());
-    this.container.appendChild(this.header);
+    JSONEditor.domMethods.appendChild(this.container, this.header);
 
     this.switcher = this.theme.getSwitcher(this.display_text);
-    container.appendChild(this.switcher);
+    JSONEditor.domMethods.appendChild(container, this.switcher);
     this.switcher.addEventListener('change',function(e) {
       e.preventDefault();
       e.stopPropagation();
@@ -4510,7 +4554,7 @@ JSONEditor.defaults.editors.multiple = JSONEditor.AbstractEditor.extend({
     });
 
     this.editor_holder = document.createElement('div');
-    container.appendChild(this.editor_holder);
+    JSONEditor.domMethods.appendChild(container, this.editor_holder);
     
       
     var validator_options = {};
@@ -4581,8 +4625,12 @@ JSONEditor.defaults.editors.multiple = JSONEditor.AbstractEditor.extend({
     $each(this.editors, function(type,editor) {
       if(editor) editor.destroy();
     });
-    if(this.editor_holder && this.editor_holder.parentNode) this.editor_holder.parentNode.removeChild(this.editor_holder);
-    if(this.switcher && this.switcher.parentNode) this.switcher.parentNode.removeChild(this.switcher);
+    if(this.editor_holder && this.editor_holder.parentNode) {
+      JSONEditor.domMethods.removeChild(this.editor_holder.parentNode, this.editor_holder);
+    }
+    if(this.switcher && this.switcher.parentNode) {
+      JSONEditor.domMethods.removeChild(this.switcher.parentNode, this.switcher);
+    }
     this._super();
   },
   showValidationErrors: function(errors) {
@@ -4622,7 +4670,7 @@ JSONEditor.defaults.editors["enum"] = JSONEditor.AbstractEditor.extend({
   build: function() {
     var container = this.container;
     this.title = this.header = this.label = this.theme.getFormInputLabel(this.getTitle());
-    this.container.appendChild(this.title);
+    JSONEditor.domMethods.appendChild(this.container, this.title);
 
     this.options.enum_titles = this.options.enum_titles || [];
 
@@ -4639,11 +4687,11 @@ JSONEditor.defaults.editors["enum"] = JSONEditor.AbstractEditor.extend({
 
     // Switcher
     this.switcher = this.theme.getSwitcher(this.select_options);
-    this.container.appendChild(this.switcher);
+    JSONEditor.domMethods.appendChild(this.container, this.switcher);
 
     // Display area
     this.display_area = this.theme.getIndentedPanel();
-    this.container.appendChild(this.display_area);
+    JSONEditor.domMethods.appendChild(this.container, this.display_area);
 
     if(this.options.hide_display) this.display_area.style.display = "none";
 
@@ -4735,9 +4783,15 @@ JSONEditor.defaults.editors["enum"] = JSONEditor.AbstractEditor.extend({
     }
   },
   destroy: function() {
-    if(this.display_area && this.display_area.parentNode) this.display_area.parentNode.removeChild(this.display_area);
-    if(this.title && this.title.parentNode) this.title.parentNode.removeChild(this.title);
-    if(this.switcher && this.switcher.parentNode) this.switcher.parentNode.removeChild(this.switcher);
+    if(this.display_area && this.display_area.parentNode) {
+      JSONEditor.domMethods.removeChild(this.display_area.parentNode, this.display_area);
+    }
+    if(this.title && this.title.parentNode) {
+      JSONEditor.domMethods.removeChild(this.title.parentNode, this.title);
+    }
+    if(this.switcher && this.switcher.parentNode) {
+      JSONEditor.domMethods.removeChild(this.switcher.parentNode, this.switcher);
+    }
 
     this._super();
   }
@@ -4918,7 +4972,7 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
     });
 
     this.control = this.theme.getFormControl(this.label, this.input, this.description);
-    this.container.appendChild(this.control);
+    JSONEditor.domMethods.appendChild(this.container, this.control);
 
     this.value = this.enum_values[0];
   },
@@ -5086,9 +5140,15 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
     this._super();
   },
   destroy: function() {
-    if(this.label && this.label.parentNode) this.label.parentNode.removeChild(this.label);
-    if(this.description && this.description.parentNode) this.description.parentNode.removeChild(this.description);
-    if(this.input && this.input.parentNode) this.input.parentNode.removeChild(this.input);
+    if(this.label && this.label.parentNode) {
+      JSONEditor.domMethods.removeChild(this.label.parentNode, this.label);
+    }
+    if(this.description && this.description.parentNode) {
+      JSONEditor.domMethods.removeChild(this.description.parentNode, this.description);
+    }
+    if(this.input && this.input.parentNode) {
+      JSONEditor.domMethods.removeChild(this.input.parentNode, this.input);
+    }
     if(this.select2) {
       this.select2.select2('destroy');
       this.select2 = null;
@@ -5263,7 +5323,7 @@ JSONEditor.defaults.editors.selectize = JSONEditor.AbstractEditor.extend({
     });
 
     this.control = this.theme.getFormControl(this.label, this.input, this.description);
-    this.container.appendChild(this.control);
+    JSONEditor.domMethods.appendChild(this.container, this.control);
 
     this.value = this.enum_values[0];
   },
@@ -5434,9 +5494,15 @@ JSONEditor.defaults.editors.selectize = JSONEditor.AbstractEditor.extend({
     this._super();
   },
   destroy: function() {
-    if(this.label && this.label.parentNode) this.label.parentNode.removeChild(this.label);
-    if(this.description && this.description.parentNode) this.description.parentNode.removeChild(this.description);
-    if(this.input && this.input.parentNode) this.input.parentNode.removeChild(this.input);
+    if(this.label && this.label.parentNode) {
+      JSONEditor.domMethods.appendChild(this.label.parentNode, this.label);
+    }
+    if(this.description && this.description.parentNode) {
+      JSONEditor.domMethods.removeChild(this.description.parentNode, this.description);
+    }
+    if(this.input && this.input.parentNode) {
+      JSONEditor.domMethods.removeChild(this.input.parentNode, this.input);
+    }
     if(this.selectize) {
       this.selectize[0].selectize.destroy();
       this.selectize = null;
@@ -5501,7 +5567,7 @@ JSONEditor.defaults.editors.multiselect = JSONEditor.AbstractEditor.extend({
       this.control = this.theme.getFormControl(this.label, this.input, this.description);
     }
 
-    this.container.appendChild(this.control);
+    JSONEditor.domMethods.appendChild(this.container, this.control);
     this.control.addEventListener('change',function(e) {
       e.preventDefault();
       e.stopPropagation();
@@ -5653,7 +5719,7 @@ JSONEditor.defaults.editors.base64 = JSONEditor.AbstractEditor.extend({
 
     // Input that holds the base64 string
     this.input = this.theme.getFormInputField('hidden');
-    this.container.appendChild(this.input);
+    JSONEditor.domMethods.appendChild(this.container, this.input);
     
     // Don't show uploader if this is readonly
     if(!this.schema.readOnly && !this.schema.readonly) {
@@ -5680,10 +5746,10 @@ JSONEditor.defaults.editors.base64 = JSONEditor.AbstractEditor.extend({
     }
 
     this.preview = this.theme.getFormInputDescription(this.schema.description);
-    this.container.appendChild(this.preview);
+    JSONEditor.domMethods.appendChild(this.container, this.preview);
 
     this.control = this.theme.getFormControl(this.label, this.uploader||this.input, this.preview);
-    this.container.appendChild(this.control);
+    JSONEditor.domMethods.appendChild(this.container, this.control);
   },
   refreshPreview: function() {
     if(this.last_preview === this.value) return;
@@ -5707,7 +5773,7 @@ JSONEditor.defaults.editors.base64 = JSONEditor.AbstractEditor.extend({
         img.style.maxWidth = '100%';
         img.style.maxHeight = '100px';
         img.src = this.value;
-        this.preview.appendChild(img);
+        JSONEditor.domMethods.appendChild(this.preview, img);
       }
     }
   },
@@ -5728,10 +5794,18 @@ JSONEditor.defaults.editors.base64 = JSONEditor.AbstractEditor.extend({
     }
   },
   destroy: function() {
-    if(this.preview && this.preview.parentNode) this.preview.parentNode.removeChild(this.preview);
-    if(this.title && this.title.parentNode) this.title.parentNode.removeChild(this.title);
-    if(this.input && this.input.parentNode) this.input.parentNode.removeChild(this.input);
-    if(this.uploader && this.uploader.parentNode) this.uploader.parentNode.removeChild(this.uploader);
+    if(this.preview && this.preview.parentNode) {
+      JSONEditor.domMethods.removeChild(this.preview.parentNode, this.preview);
+    }
+    if(this.title && this.title.parentNode) {
+      JSONEditor.domMethods.removeChild(this.title.parentNode, this.title);
+    }
+    if(this.input && this.input.parentNode) {
+      JSONEditor.domMethods.removeChild(this.input.parentNode, this.input);
+    }
+    if(this.uploader && this.uploader.parentNode) {
+      JSONEditor.domMethods.removeChild(this.uploader.parentNode, this.uploader);
+    }
 
     this._super();
   }
@@ -5747,7 +5821,7 @@ JSONEditor.defaults.editors.upload = JSONEditor.AbstractEditor.extend({
 
     // Input that holds the base64 string
     this.input = this.theme.getFormInputField('hidden');
-    this.container.appendChild(this.input);
+    JSONEditor.domMethods.appendChild(this.container, this.input);
     
     // Don't show uploader if this is readonly
     if(!this.schema.readOnly && !this.schema.readonly) {
@@ -5778,10 +5852,10 @@ JSONEditor.defaults.editors.upload = JSONEditor.AbstractEditor.extend({
     if (!description) description = '';
 
     this.preview = this.theme.getFormInputDescription(description);
-    this.container.appendChild(this.preview);
+    JSONEditor.domMethods.appendChild(this.container, this.preview);
 
     this.control = this.theme.getFormControl(this.label, this.uploader||this.input, this.preview);
-    this.container.appendChild(this.control);
+    JSONEditor.domMethods.appendChild(this.container, this.control);
   },
   refreshPreview: function() {
     if(this.last_preview === this.preview_value) return;
@@ -5806,12 +5880,12 @@ JSONEditor.defaults.editors.upload = JSONEditor.AbstractEditor.extend({
       img.style.maxWidth = '100%';
       img.style.maxHeight = '100px';
       img.src = this.preview_value;
-      this.preview.appendChild(img);
+      JSONEditor.domMethods.appendChild(this.preview, img);
     }
 
     this.preview.innerHTML += '<br>';
     var uploadButton = this.getButton('Upload', 'upload', 'Upload');
-    this.preview.appendChild(uploadButton);
+    JSONEditor.domMethods.appendChild(this.preview, uploadButton);
     uploadButton.addEventListener('click',function(event) {
       event.preventDefault();
 
@@ -5820,7 +5894,7 @@ JSONEditor.defaults.editors.upload = JSONEditor.AbstractEditor.extend({
 
       if (self.theme.getProgressBar) {
         self.progressBar = self.theme.getProgressBar();
-        self.preview.appendChild(self.progressBar);
+        JSONEditor.domMethods.appendChild(self.preview, self.progressBar);
       }
 
       self.jsoneditor.options.upload(self.path, file, {
@@ -5830,12 +5904,16 @@ JSONEditor.defaults.editors.upload = JSONEditor.AbstractEditor.extend({
           if(self.parent) self.parent.onChildEditorChange(self);
           else self.jsoneditor.onChange();
 
-          if (self.progressBar) self.preview.removeChild(self.progressBar);
+          if (self.progressBar) {
+            JSONEditor.domMethods.removeChild(self.preview, self.progressBar);
+          }
           uploadButton.removeAttribute("disabled");
         },
         failure: function(error) {
           self.theme.addInputError(self.uploader, error);
-          if (self.progressBar) self.preview.removeChild(self.progressBar);
+          if (self.progressBar) {
+            JSONEditor.domMethods.removeChild(self.preview, self.progressBar);
+          }
           uploadButton.removeAttribute("disabled");
         },
         updateProgress: function(progress) {
@@ -5863,10 +5941,18 @@ JSONEditor.defaults.editors.upload = JSONEditor.AbstractEditor.extend({
     }
   },
   destroy: function() {
-    if(this.preview && this.preview.parentNode) this.preview.parentNode.removeChild(this.preview);
-    if(this.title && this.title.parentNode) this.title.parentNode.removeChild(this.title);
-    if(this.input && this.input.parentNode) this.input.parentNode.removeChild(this.input);
-    if(this.uploader && this.uploader.parentNode) this.uploader.parentNode.removeChild(this.uploader);
+    if(this.preview && this.preview.parentNode) {
+      JSONEditor.domMethods.removeChild(this.preview.parentNode, this.preview);
+    }
+    if(this.title && this.title.parentNode) {
+      JSONEditor.domMethods.removeChild(this.title.parentNode, this.title);
+    }
+    if(this.input && this.input.parentNode) {
+      JSONEditor.domMethods.removeChild(this.input.parentNode, this.input);
+    }
+    if(this.uploader && this.uploader.parentNode) {
+      JSONEditor.domMethods.removeChild(this.uploader.parentNode, this.uploader);
+    }
 
     this._super();
   }
@@ -5914,7 +6000,7 @@ JSONEditor.defaults.editors.checkbox = JSONEditor.AbstractEditor.extend({
       self.onChange(true);
     });
 
-    this.container.appendChild(this.control);
+    JSONEditor.domMethods.appendChild(this.container, this.control);
   },
   enable: function() {
     if(!this.always_disabled) {
@@ -5927,9 +6013,15 @@ JSONEditor.defaults.editors.checkbox = JSONEditor.AbstractEditor.extend({
     this._super();
   },
   destroy: function() {
-    if(this.label && this.label.parentNode) this.label.parentNode.removeChild(this.label);
-    if(this.description && this.description.parentNode) this.description.parentNode.removeChild(this.description);
-    if(this.input && this.input.parentNode) this.input.parentNode.removeChild(this.input);
+    if(this.label && this.label.parentNode) {
+      this.label.parentNode.removeChild(this.label);
+    }
+    if(this.description && this.description.parentNode) {
+      JSONEditor.domMethods.removeChild(this.description.parentNode, this.description);
+    }
+    if(this.input && this.input.parentNode) {
+      JSONEditor.domMethods.removeChild(this.input.parentNode, this.input);
+    }
     this._super();
   }
 });
@@ -5939,7 +6031,7 @@ JSONEditor.defaults.editors.arraySelectize = JSONEditor.AbstractEditor.extend({
     this.title = this.theme.getFormInputLabel(this.getTitle());
 
     this.title_controls = this.theme.getHeaderButtonHolder();
-    this.title.appendChild(this.title_controls);
+    JSONEditor.domMethods.appendChild(this.title, this.title_controls);
     this.error_holder = document.createElement('div');
 
     if(this.schema.description) {
@@ -5951,8 +6043,8 @@ JSONEditor.defaults.editors.arraySelectize = JSONEditor.AbstractEditor.extend({
 
     var group = this.theme.getFormControl(this.title, this.input, this.description);
 
-    this.container.appendChild(group);
-    this.container.appendChild(this.error_holder);
+    JSONEditor.domMethods.appendChild(this.container, group);
+    JSONEditor.domMethods.appendChild(this.container, this.error_holder);
 
     window.jQuery(this.input).selectize({
       delimiter: false,
@@ -5969,9 +6061,15 @@ JSONEditor.defaults.editors.arraySelectize = JSONEditor.AbstractEditor.extend({
   },
   destroy: function() {
     this.empty(true);
-    if(this.title && this.title.parentNode) this.title.parentNode.removeChild(this.title);
-    if(this.description && this.description.parentNode) this.description.parentNode.removeChild(this.description);
-    if(this.input && this.input.parentNode) this.input.parentNode.removeChild(this.input);
+    if(this.title && this.title.parentNode) {
+      JSONEditor.domMethods.removeChild(this.title.parentNode, this.title);
+    }
+    if(this.description && this.description.parentNode) {
+      JSONEditor.domMethods.removeChild(this.description.parentNode, this.description);
+    }
+    if(this.input && this.input.parentNode) {
+      JSONEditor.domMethods.removeChild(this.input.parentNode, this.input);
+    }
 
     this._super();
   },
@@ -6018,7 +6116,7 @@ JSONEditor.defaults.editors.arraySelectize = JSONEditor.AbstractEditor.extend({
         this.error_holder.innerHTML = '';
         this.error_holder.style.display = '';
         $each(my_errors, function(i,error) {
-          self.error_holder.appendChild(self.theme.getErrorMessage(error.message));
+          JSONEditor.domMethods.appendChild(self.error_holder, self.theme.getErrorMessage(error.message));
         });
       }
       // Hide error area
@@ -6079,7 +6177,7 @@ JSONEditor.AbstractTheme = Class.extend({
   getLink: function(text) {
     var el = document.createElement('a');
     el.setAttribute('href','#');
-    el.appendChild(document.createTextNode(text));
+    JSONEditor.domMethods.appendChild(el, document.createTextNode(text));
     return el;
   },
   disableHeader: function(header) {
@@ -6096,7 +6194,7 @@ JSONEditor.AbstractTheme = Class.extend({
   },
   getFormInputLabel: function(text) {
     var el = document.createElement('label');
-    el.appendChild(document.createTextNode(text));
+    JSONEditor.domMethods.appendChild(el, document.createTextNode(text));
     return el;
   },
   getCheckboxLabel: function(text) {
@@ -6110,7 +6208,7 @@ JSONEditor.AbstractTheme = Class.extend({
       el.textContent = text;
     }
     else {
-      el.appendChild(text);
+      JSONEditor.domMethods.appendChild(el, text);
     }
 
     return el;
@@ -6126,17 +6224,19 @@ JSONEditor.AbstractTheme = Class.extend({
 
     if(label) {
       label.style.display = 'block';
-      el.appendChild(label);
+      JSONEditor.domMethods.appendChild(el, label);
     }
 
     for(var i in controls) {
       if(!controls.hasOwnProperty(i)) continue;
       controls[i].style.display = 'inline-block';
       controls[i].style.marginRight = '20px';
-      el.appendChild(controls[i]);
+      JSONEditor.domMethods.appendChild(el, controls[i]);
     }
 
-    if(description) el.appendChild(description);
+    if(description) {
+      JSONEditor.domMethods.appendChild(el, description);
+    }
 
     return el;
   },
@@ -6171,7 +6271,7 @@ JSONEditor.AbstractTheme = Class.extend({
       var option = document.createElement('option');
       option.setAttribute('value',options[i]);
       option.textContent = titles[i] || options[i];
-      select.appendChild(option);
+      JSONEditor.domMethods.appendChild(select, option);
     }
   },
   getTextareaInput: function() {
@@ -6200,15 +6300,19 @@ JSONEditor.AbstractTheme = Class.extend({
   getFormControl: function(label, input, description) {
     var el = document.createElement('div');
     el.className = 'form-control';
-    if(label) el.appendChild(label);
+    if(label) {
+      JSONEditor.domMethods.appendChild(el, label);
+    }
     if(input.type === 'checkbox') {
-      label.insertBefore(input,label.firstChild);
+      JSONEditor.domMethods.insertBefore(label, input, label.firstChild);
     }
     else {
-      el.appendChild(input);
+      JSONEditor.domMethods.appendChild(el, input);
     }
 
-    if(description) el.appendChild(description);
+    if(description) {
+      JSONEditor.domMethods.appendChild(el, description);
+    }
     return el;
   },
   getIndentedPanel: function() {
@@ -6248,10 +6352,10 @@ JSONEditor.AbstractTheme = Class.extend({
   setButtonText: function(button, text, icon, title) {
     button.innerHTML = '';
     if(icon) {
-      button.appendChild(icon);
+      JSONEditor.domMethods.appendChild(button, icon);
       button.innerHTML += ' ';
     }
-    button.appendChild(document.createTextNode(text));
+    JSONEditor.domMethods.appendChild(button, document.createTextNode(text));
     if(title) button.setAttribute('title',title);
   },
   getTable: function() {
@@ -6279,7 +6383,7 @@ JSONEditor.AbstractTheme = Class.extend({
     var el = document.createElement('p');
     el.style = el.style || {};
     el.style.color = 'red';
-    el.appendChild(document.createTextNode(text));
+    JSONEditor.domMethods.appendChild(el, document.createTextNode(text));
     return el;
   },
   addInputError: function(input, text) {
@@ -6319,7 +6423,7 @@ JSONEditor.AbstractTheme = Class.extend({
   },
   getTab: function(span) {
     var el = document.createElement('div');
-    el.appendChild(span);
+    JSONEditor.domMethods.appendChild(el, span);
     el.style = el.style || {};
     this.applyStyles(el,{
       border: '1px solid #ccc',
@@ -6353,7 +6457,7 @@ JSONEditor.AbstractTheme = Class.extend({
     });
   },
   addTab: function(holder, tab) {
-    holder.children[0].appendChild(tab);
+    JSONEditor.domMethods.appendChild(holder.children[0], tab);
   },
   getBlockLink: function() {
     var link = document.createElement('a');
@@ -6369,13 +6473,13 @@ JSONEditor.AbstractTheme = Class.extend({
     return el;
   },
   createMediaLink: function(holder,link,media) {
-    holder.appendChild(link);
+    JSONEditor.domMethods.appendChild(holder, link);
     media.style.width='100%';
-    holder.appendChild(media);
+    JSONEditor.domMethods.appendChild(holder, media);
   },
   createImageLink: function(holder,link,image) {
-    holder.appendChild(link);
-    link.appendChild(image);
+    JSONEditor.domMethods.appendChild(holder, link);
+    JSONEditor.domMethods.appendChild(link, image);
   }
 });
 
@@ -6445,23 +6549,24 @@ JSONEditor.defaults.themes.bootstrap2 = JSONEditor.AbstractTheme.extend({
     controls.className = 'controls';
 
     if(label && input.getAttribute('type') === 'checkbox') {
-      ret.appendChild(controls);
+      JSONEditor.domMethods.appendChild(ret, controls);
       label.className += ' checkbox';
-      label.appendChild(input);
-      controls.appendChild(label);
+      JSONEditor.domMethods.appendChild(label, input);
+      JSONEditor.domMethods.appendChild(controls, label);
       controls.style.height = '30px';
     }
     else {
       if(label) {
         label.className += ' control-label';
-        ret.appendChild(label);
+        JSONEditor.domMethods.appendChild(ret, label);
       }
-      controls.appendChild(input);
-      ret.appendChild(controls);
+      JSONEditor.domMethods.appendChild(controls, input);
+      JSONEditor.domMethods.appendChild(ret, controls);
     }
 
-    if(description) controls.appendChild(description);
-
+    if(description) {
+      JSONEditor.domMethods.appendChild(controls, description);
+    }
     return ret;
   },
   getHeaderButtonHolder: function() {
@@ -6492,7 +6597,7 @@ JSONEditor.defaults.themes.bootstrap2 = JSONEditor.AbstractTheme.extend({
     if(!input.errmsg) {
       input.errmsg = document.createElement('p');
       input.errmsg.className = 'help-block errormsg';
-      input.controls.appendChild(input.errmsg);
+      JSONEditor.domMethods.appendChild(input.controls, input.errmsg);
     }
     else {
       input.errmsg.style.display = '';
@@ -6515,8 +6620,8 @@ JSONEditor.defaults.themes.bootstrap2 = JSONEditor.AbstractTheme.extend({
     var el = document.createElement('li');
     var a = document.createElement('a');
     a.setAttribute('href','#');
-    a.appendChild(text);
-    el.appendChild(a);
+    JSONEditor.domMethods.appendChild(a, text);
+    JSONEditor.domMethods.appendChild(el, a);
     return el;
   },
   getTabContentHolder: function(tab_holder) {
@@ -6534,7 +6639,7 @@ JSONEditor.defaults.themes.bootstrap2 = JSONEditor.AbstractTheme.extend({
     tab.className = tab.className.replace(/\s?active/g,'');
   },
   addTab: function(holder, tab) {
-    holder.children[0].appendChild(tab);
+    JSONEditor.domMethods.appendChild(holder.children[0], tab);
   },
   getProgressBar: function() {
     var container = document.createElement('div');
@@ -6543,7 +6648,7 @@ JSONEditor.defaults.themes.bootstrap2 = JSONEditor.AbstractTheme.extend({
     var bar = document.createElement('div');
     bar.className = 'bar';
     bar.style.width = '0%';
-    container.appendChild(bar);
+    JSONEditor.domMethods.appendChild(container, bar);
 
     return container;
   },
@@ -6600,10 +6705,10 @@ JSONEditor.defaults.themes.bootstrap3 = JSONEditor.AbstractTheme.extend({
 
     if(label && input.type === 'checkbox') {
       group.className += ' checkbox';
-      label.appendChild(input);
+      JSONEditor.domMethods.appendChild(label, input);
       label.style.fontSize = '14px';
       group.style.marginTop = '0';
-      group.appendChild(label);
+      JSONEditor.domMethods.appendChild(group, label);
       input.style.position = 'relative';
       input.style.cssFloat = 'left';
     } 
@@ -6611,12 +6716,14 @@ JSONEditor.defaults.themes.bootstrap3 = JSONEditor.AbstractTheme.extend({
       group.className += ' form-group';
       if(label) {
         label.className += ' control-label';
-        group.appendChild(label);
+        JSONEditor.domMethods.appendChild(group, label);
       }
-      group.appendChild(input);
+      JSONEditor.domMethods.appendChild(group, input);
     }
 
-    if(description) group.appendChild(description);
+    if(description) {
+      JSONEditor.domMethods.appendChild(group, description);
+    }
 
     return group;
   },
@@ -6660,7 +6767,7 @@ JSONEditor.defaults.themes.bootstrap3 = JSONEditor.AbstractTheme.extend({
     if(!input.errmsg) {
       input.errmsg = document.createElement('p');
       input.errmsg.className = 'help-block errormsg';
-      input.controlgroup.appendChild(input.errmsg);
+      JSONEditor.domMethods.appendChild(input.controlgroup, input.errmsg);
     }
     else {
       input.errmsg.style.display = '';
@@ -6683,7 +6790,7 @@ JSONEditor.defaults.themes.bootstrap3 = JSONEditor.AbstractTheme.extend({
     var el = document.createElement('a');
     el.className = 'list-group-item';
     el.setAttribute('href','#');
-    el.appendChild(text);
+    JSONEditor.domMethods.appendChild(el, text);
     return el;
   },
   markTabActive: function(tab) {
@@ -6705,7 +6812,7 @@ JSONEditor.defaults.themes.bootstrap3 = JSONEditor.AbstractTheme.extend({
     bar.setAttribute('aria-valuemin', min);
     bar.setAttribute('aria-valuenax', max);
     bar.innerHTML = start + "%";
-    container.appendChild(bar);
+    JSONEditor.domMethods.appendChild(container, bar);
 
     return container;
   },
@@ -6820,7 +6927,7 @@ JSONEditor.defaults.themes.foundation = JSONEditor.AbstractTheme.extend({
     var meter = document.createElement('span');
     meter.className = 'meter';
     meter.style.width = '0%';
-    progressBar.appendChild(meter);
+    JSONEditor.domMethods.appendChild(progressBar, meter);
     return progressBar;
   },
   updateProgressBar: function(progressBar, progress) {
@@ -6859,8 +6966,8 @@ JSONEditor.defaults.themes.foundation3 = JSONEditor.defaults.themes.foundation.e
     var el = document.createElement('dd');
     var a = document.createElement('a');
     a.setAttribute('href','#');
-    a.appendChild(text);
-    el.appendChild(a);
+    JSONEditor.domMethods.appendChild(a, text);
+    JSONEditor.domMethods.appendChild(el, a);
     return el;
   },
   getTabContentHolder: function(tab_holder) {
@@ -6879,7 +6986,7 @@ JSONEditor.defaults.themes.foundation3 = JSONEditor.defaults.themes.foundation.e
     tab.className = tab.className.replace(/\s*active/g,'');
   },
   addTab: function(holder, tab) {
-    holder.children[0].appendChild(tab);
+    JSONEditor.domMethods.appendChild(holder.children[0], tab);
   }
 });
 
@@ -6929,8 +7036,8 @@ JSONEditor.defaults.themes.foundation5 = JSONEditor.defaults.themes.foundation.e
     var el = document.createElement('dd');
     var a = document.createElement('a');
     a.setAttribute('href','#');
-    a.appendChild(text);
-    el.appendChild(a);
+    JSONEditor.domMethods.appendChild(a, text);
+    JSONEditor.domMethods.appendChild(el, a);
     return el;
   },
   getTabContentHolder: function(tab_holder) {
@@ -6949,7 +7056,7 @@ JSONEditor.defaults.themes.foundation5 = JSONEditor.defaults.themes.foundation.e
     tab.className = tab.className.replace(/\s*active/g,'');
   },
   addTab: function(holder, tab) {
-    holder.children[0].appendChild(tab);
+    JSONEditor.domMethods.appendChild(holder.children[0], tab);
   }
 });
 
@@ -7005,14 +7112,14 @@ JSONEditor.defaults.themes.html = JSONEditor.AbstractTheme.extend({
       input.errmsg.setAttribute('class','errmsg');
       input.errmsg.style = input.errmsg.style || {};
       input.errmsg.style.color = 'red';
-      group.appendChild(input.errmsg);
+      JSONEditor.domMethods.appendChild(group, input.errmsg);
     }
     else {
       input.errmsg.style.display = 'block';
     }
     
     input.errmsg.innerHTML = '';
-    input.errmsg.appendChild(document.createTextNode(text));
+    JSONEditor.domMethods.appendChild(input.errmsg, document.createTextNode(text));
   },
   removeInputError: function(input) {
     input.style.borderColor = '';
@@ -7107,13 +7214,13 @@ JSONEditor.defaults.themes.jqueryui = JSONEditor.AbstractTheme.extend({
     if(icon && !text) {
       button.className += ' ui-button-icon-only';
       icon.className += ' ui-button-icon-primary ui-icon-primary';
-      button.appendChild(icon);
+      JSONEditor.domMethods.appendChild(button, icon);
     }
     // Icon and Text
     else if(icon) {
       button.className += ' ui-button-text-icon-primary';
       icon.className += ' ui-button-icon-primary ui-icon-primary';
-      button.appendChild(icon);
+      JSONEditor.domMethods.appendChild(button, icon);
     }
     // Text only
     else {
@@ -7123,7 +7230,7 @@ JSONEditor.defaults.themes.jqueryui = JSONEditor.AbstractTheme.extend({
     var el = document.createElement('span');
     el.className = 'ui-button-text';
     el.textContent = text||title||".";
-    button.appendChild(el);
+    JSONEditor.domMethods.appendChild(button, el);
 
     button.setAttribute('title',title);
     
@@ -7137,13 +7244,13 @@ JSONEditor.defaults.themes.jqueryui = JSONEditor.AbstractTheme.extend({
     if(icon && !text) {
       button.className += ' ui-button-icon-only';
       icon.className += ' ui-button-icon-primary ui-icon-primary';
-      button.appendChild(icon);
+      JSONEditor.domMethods.appendChild(button, icon);
     }
     // Icon and Text
     else if(icon) {
       button.className += ' ui-button-text-icon-primary';
       icon.className += ' ui-button-icon-primary ui-icon-primary';
-      button.appendChild(icon);
+      JSONEditor.domMethods.appendChild(button, icon);
     }
     // Text only
     else {
@@ -7153,7 +7260,7 @@ JSONEditor.defaults.themes.jqueryui = JSONEditor.AbstractTheme.extend({
     var el = document.createElement('span');
     el.className = 'ui-button-text';
     el.textContent = text||title||".";
-    button.appendChild(el);
+    JSONEditor.domMethods.appendChild(button, el);
 
     button.setAttribute('title',title);
   },
@@ -7173,7 +7280,7 @@ JSONEditor.defaults.themes.jqueryui = JSONEditor.AbstractTheme.extend({
     if(!input.errmsg) {
       input.errmsg = document.createElement('div');
       input.errmsg.className = 'ui-state-error';
-      input.controls.appendChild(input.errmsg);
+      JSONEditor.domMethods.appendChild(input.controls, input.errmsg);
     }
     else {
       input.errmsg.style.display = '';

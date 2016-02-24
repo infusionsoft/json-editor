@@ -15,8 +15,8 @@ JSONEditor.domMethods = {
   removeChild: function(parentElem, childElem) {
     parentElem.removeChild(childElem);
   },
-  childNodes: function(parentElem) {
-    parentElem.children;
+  insertBefore: function(parentElem, childElem, beforeChildElem) {
+    parentElem.insertBefore(childElem, beforeChildElem);
   }
 };
 
