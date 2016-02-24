@@ -10,13 +10,13 @@ var JSONEditor = function(element,options) {
 
 JSONEditor.domMethods = {
   appendChild: function(parentElem, childElem) {
-    return parentElem.appendChild(childElem);
+    parentElem.appendChild(childElem);
   },
   removeChild: function(parentElem, childElem) {
-    return parentElem.removeChild(childElem);
+    parentElem.removeChild(childElem);
   },
   childNodes: function(parentElem) {
-    return parentElem.children;
+    parentElem.children;
   }
 };
 
