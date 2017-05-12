@@ -2857,7 +2857,7 @@ JSONEditor.defaults.editors.object = JSONEditor.AbstractEditor.extend({
     if(this.jsoneditor.options.remove_empty_properties || this.options.remove_empty_properties) {
       for(var i in result) {
         if(result.hasOwnProperty(i)) {
-          if(!result[i]) delete result[i];
+          if(!result[i] && result[i].toString() != "false") delete result[i];
         }
       }
     }
